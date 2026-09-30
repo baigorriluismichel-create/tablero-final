@@ -1,0 +1,206 @@
+index.html
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Tablero</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- MENÚ PRINCIPAL -->
+    <div id="modal-menu" class="modal">
+        <div class="modal-contenido">
+            <h2>Configuración de la Partida</h2>
+            
+            <div class="opcion-menu">
+                <label for="select-modo"><strong>Modo de Juego:</strong></label>
+                <select id="select-modo">
+                    <option value="pvp">Persona vs Persona</option>
+                    <option value="pve" selected>Persona vs Bot</option>
+                    <option value="eve">Bot vs Bot</option>
+                </select>
+            </div>
+
+            <!-- SELECTOR DE DIFICULTAD -->
+            <div class="opcion-menu" id="contenedor-dificultad">
+                <label for="select-dificultad"><strong>Dificultad del Bot:</strong></label>
+                <select id="select-dificultad">
+                    <option value="facil">Fácil (Aleatorio)</option>
+                    <option value="medio" selected>Medio (Busca casas)</option>
+                    <option value="dificil">Difícil (Estrategia Toroidal)</option>
+                </select>
+            </div>
+
+            <div class="opcion-menu">
+                <label for="input-nombre-j1"><strong>Nombre Jugador 1:</strong></label>
+                <input type="text" id="input-nombre-j1" value="Jugador 1" maxlength="15">
+            </div>
+
+            <div class="opcion-menu">
+                <label for="select-color-j1"><strong>Color Jugador 1:</strong></label>
+                <select id="select-color-j1">
+                    <option value="verde">🟢 Verde</option>
+                    <option value="rojo">🔴 Rojo</option>
+                    <option value="azul" selected>🔵 Azul</option>
+                    <option value="amarillo">🟡 Amarillo</option>
+                </select>
+            </div>
+
+            <div class="opcion-menu">
+                <label for="input-nombre-j2"><strong>Nombre Jugador 2:</strong></label>
+                <input type="text" id="input-nombre-j2" value="Jugador 2" maxlength="15">
+            </div>
+
+            <div class="opcion-menu">
+                <label for="select-color-j2"><strong>Color Jugador 2:</strong></label>
+                <select id="select-color-j2">
+                    <option value="rojo" selected>🔴 Rojo</option>
+                    <option value="verde">🟢 Verde</option>
+                    <option value="azul">🔵 Azul</option>
+                    <option value="amarillo">🟡 Amarillo</option>
+                </select>
+            </div>
+
+            <button id="boton-iniciar" class="boton-principal" type="button">Iniciar Juego</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE VICTORIA -->
+    <div id="modal-victoria" class="modal" style="display: none;">
+        <div class="modal-contenido victoria-contenido">
+            <h2 id="victoria-titulo">🎉 ¡FELICIDADES! 🎉</h2>
+            <p id="victoria-subtitulo" class="victoria-ganador"></p>
+            
+            <div class="victoria-stats">
+                <div class="stat-box">
+                    <span>⏱️ Tiempo</span>
+                    <strong id="victoria-tiempo">0 min 0 sec</strong>
+                </div>
+                <div class="stat-box">
+                    <span>🎲 Movimientos</span>
+                    <strong id="victoria-movimientos">0</strong>
+                </div>
+                <div class="stat-box">
+                    <span>🔄 Rondas</span>
+                    <strong id="victoria-rondas">0</strong>
+                </div>
+            </div>
+
+            <button id="boton-reiniciar-victoria" class="boton-principal" type="button">Jugar otra vez</button>
+        </div>
+    </div>
+
+    <!-- MODAL MANUAL DE JUEGO -->
+    <div id="modal-manual" class="modal" style="display: none;">
+        <div class="modal-contenido modal-manual-contenido">
+            <h2>📜 Manual de Juego</h2>
+            
+            <div class="manual-cuerpo">
+                <p><strong>🎯 Objetivo:</strong></p>
+                <p>Sé el primer jugador en conquistar <strong>3 casas (🏠)</strong> en el tablero.</p>
+                
+                <p><strong>🎲 ¿Cómo jugar?</strong></p>
+                <ul>
+                    <li>Lanza el dado en tu turno para obtener un movimiento de <strong>1 a 3 casillas</strong>.</li>
+                    <li>Selecciona la ficha que deseas mover haciendo clic sobre ella en el tablero.</li>
+                    <li>Usa las flechas (↑, ←, ↓, →) para mover la ficha seleccionada. El tablero es cilíndrico (si sales por un borde, reapareces en el opuesto).</li>
+                </ul>
+
+                <p><strong>🏠 Conquista y Clonación:</strong></p>
+                <ul>
+                    <li>Al caer exactamente en una casilla con casa (🏠), la conquistas.</li>
+                    <li>Al conquistar una casa, <strong>ganas una nueva ficha</strong> en esa misma posición.</li>
+                    <li>Si tienes múltiples fichas, cada número del dado te permite mover <strong>cada una de tus fichas esa cantidad de casillas</strong> en tu turno.</li>
+                </ul>
+
+                <p><strong>⏳ Tiempo límite:</strong></p>
+                <p>Tienes 30 segundos por turno. Si se agota el tiempo, pasarás el turno automáticamente.</p>
+            </div>
+
+            <button id="boton-cerrar-manual" class="boton-principal" type="button">Entendido</button>
+        </div>
+    </div>
+
+    <!-- ENCABEZADO -->
+    <header class="encabezado">
+        <div class="logo">🎲 Juego de Tablero</div>
+        <div style="display: flex; gap: 10px;">
+            <button id="boton-menu" class="boton-tema" type="button" title="Configuración">⚙️</button>
+            <button id="boton-tema" class="boton-tema" type="button" title="Cambiar Tema">🌙</button>
+        </div>
+    </header>
+
+    <main class="contenedor">
+        <!-- PANEL SUPERIOR: JUGADORES Y DADO CENTRAL -->
+        <section class="jugadores-seccion">
+            <div id="panel-jugador-1" class="jugador jugador-1 jugador-activo">
+                <div id="barra-j1" class="jugador-color"></div>
+                <div>
+                    <h2 id="nombre-j1">Jugador 1</h2>
+                    <p>Casas conquistadas: <span id="casas-j1">0</span>/3</p>
+                </div>
+            </div>
+
+            <div class="dado-central-container">
+                <div id="dado-central" class="dado-3d">🎲</div>
+            </div>
+
+            <div id="panel-jugador-2" class="jugador jugador-2">
+                <div id="barra-j2" class="jugador-color"></div>
+                <div>
+                    <h2 id="nombre-j2">Jugador 2</h2>
+                    <p>Casas conquistadas: <span id="casas-j2">0</span>/3</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ZONA DE JUEGO: 3 COLUMNAS -->
+        <section class="zona-juego">
+            <!-- COLUMNA 1: TABLERO A LA IZQUIERDA -->
+            <div class="tablero-contenedor">
+                <h1>Tablero</h1>
+                <div id="tablero" class="tablero"></div>
+            </div>
+
+            <!-- COLUMNA 2: ESTADO Y CONTROLES EN EL CENTRO -->
+            <aside class="panel-control">
+                <div class="estado-partida">
+                    <h2>Estado de la partida</h2>
+                    <div class="dato"><span>Ronda</span><strong id="ronda">1</strong></div>
+                    <div class="dato"><span>Turno</span><strong id="turno">Jugador 1</strong></div>
+                    <div class="dato"><span>Tiempo</span><strong id="temporizador">30s</strong></div>
+                    <div class="dato"><span>Dado (1-3)</span><strong id="dado">-</strong></div>
+                </div>
+
+                <div class="controles">
+                    <button id="boton-dado" class="boton-principal" type="button">🎲 Tirar dado (1-3)</button>
+                    <div class="direcciones">
+                        <button type="button" data-direccion="norte">↑</button>
+                        <div class="fila-direcciones">
+                            <button type="button" data-direccion="oeste">←</button>
+                            <button type="button" data-direccion="sur">↓</button>
+                            <button type="button" data-direccion="este">→</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTÓN CÓMO JUGAR -->
+                <button id="boton-manual" class="boton-como-jugar" type="button">❓ ¿Cómo jugar?</button>
+            </aside>
+
+            <!-- COLUMNA 3: HISTORIAL VERTICAL A LA DERECHA -->
+            <section class="historial">
+                <h2>Historial de movimientos</h2>
+                <div id="historial-movimientos" class="historial-lista">
+                    <p class="sin-movimientos">Todavía no hay movimientos.</p>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
